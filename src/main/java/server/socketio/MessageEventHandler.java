@@ -8,9 +8,9 @@ import com.corundumstudio.socketio.annotation.OnConnect;
 import com.corundumstudio.socketio.annotation.OnDisconnect;
 import com.corundumstudio.socketio.annotation.OnEvent;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import server.config.security.JavaJWT;
 import server.db.primary.model.basic.User;
 import server.service.interf.login.UserService;
 import server.socketio.model.AckModel;
@@ -39,9 +39,9 @@ public class MessageEventHandler {
     @OnConnect
     public void onConnect(SocketIOClient client) {
         log.debug("客户端:  " + client.getSessionId() + "  已连接");
-        String userId = JavaJWT.getId(client.getHandshakeData().getSingleUrlParam("token"));
+        Integer id = (Integer) SecurityUtils.getSubject().getPrincipal();
 //        String userId=client.getHandshakeData().getHttpHeaders().get("Authorization");
-        User user = userService.selectOneById(Integer.parseInt(userId));
+        User user = userService.selectOneById(id);
         addUserInfo(user, client.getSessionId());
         updateUserListForWeb();
     }

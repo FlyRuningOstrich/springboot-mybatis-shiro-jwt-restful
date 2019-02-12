@@ -8,7 +8,6 @@ import com.corundumstudio.socketio.annotation.SpringAnnotationScanner;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import server.config.security.JavaJWT;
 
 @Configuration
 public class SocketIOServerConfig {
@@ -30,17 +29,17 @@ public class SocketIOServerConfig {
         com.corundumstudio.socketio.Configuration config = new com.corundumstudio.socketio.Configuration();
         config.setHostname(hostname);
         config.setPort(port);
-        config.setAuthorizationListener(data -> {//身份验证，直接使用jwt验证token
-//            String token = data.getHttpHeaders().get("Authorization");
-            String token = data.getSingleUrlParam("token");
-            boolean result = false;
-            try {
-                result = JavaJWT.verifyToken(token);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return result;
-        });
+//        config.setAuthorizationListener(data -> {
+////            String token = data.getHttpHeaders().get("Authorization");
+//            String token = data.getSingleUrlParam("token");
+//            boolean result = false;
+//            try {
+//                result = JavaJWT.verifyToken(token);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//            return result;
+//        });
 
         return new SocketIOServer(config);
     }

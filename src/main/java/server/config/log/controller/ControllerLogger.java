@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import server.config.security.JavaJWT;
+//import server.config.security.JavaJWT;
 import server.db.primary.mapper.basic.UserMapper;
 import server.db.primary.model.basic.User;
 import server.tool.Res;
@@ -75,7 +75,7 @@ public class ControllerLogger {
                     paramSB.append("  ");
                 }
                 stringBuilder.append("\r\nPARAM     : " + paramSB.toString());
-                stringBuilder.append(userLog(request));//记录用户信息，无相应方法可删除
+//                stringBuilder.append(userLog(request));//记录用户信息，无相应方法可删除
                 stringBuilder.append("\r\n-------------------↑REQ↑--------------------");
             }
         } catch (Exception e) {
@@ -112,14 +112,16 @@ public class ControllerLogger {
         this.userMapper = userMapper;
     }
 
-    private String userLog(HttpServletRequest request) {
-        try {
-            User user = userMapper.selectByPrimaryKey(JavaJWT.getId(request.getHeader("Authorization")));
-            return "\r\nUSER     : " + user.getNickname() + "[id: " + user.getId() + "]";
-        } catch (Exception e) {
-            return "\r\nUSER     : GUEST";
-        }
-    }
+//    private String userLog(HttpServletRequest request) {
+//        try {
+//            User user = userMapper.selectByPrimaryKey(JavaJWT.getId(request.getHeader("Authorization")));
+//            return "\r\nUSER     : " + user.getNickname() + "[id: " + user.getId() + "]";
+//        } catch (Exception e) {
+//            return "\r\nUSER     : GUEST";
+//        }
+//    }
+
+    
     //------用户信息记录，无相应方法可删除----END
 //// 使用before after无法同时收集传入参数与返回参数，改用around
 //    @Before("webLog()")

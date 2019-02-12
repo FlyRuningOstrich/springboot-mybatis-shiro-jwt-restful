@@ -5,14 +5,16 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.authz.annotation.RequiresUser;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import server.config.security.JavaJWT;
 import server.tool.TreeData;
 import server.tool.FileRec;
 import server.tool.Res;
@@ -40,10 +42,15 @@ public class ExampleController {
 
     //获取当前用户相关信息。
     @PostMapping("infoByHeader")
-    public Res getInfo(@RequestHeader("Authorization") String token) {
-        String id = JavaJWT.getId(token);
+    public Res getInfo(@RequestHeader(value = "Authorization", required = false) String token) {
+//        String id = JavaJWT.getId(token);
         Map<String, Object> map = new HashMap<>();
-        map.put("id", id);
+//        map.put("id", id);
+        Subject subject = SecurityUtils.getSubject();
+        long timeout = subject.getSession().getTimeout();
+        Object obj = subject.getPrincipal();
+        map.put("principal", obj);
+        map.put("timeOut", timeout);
         return Res.success(map);
     }
 
@@ -76,10 +83,28 @@ public class ExampleController {
         return Res.success("WebController：everyone");
     }
 
+    @RequestMapping("/require_user")
+    @RequiresUser
+    public Res requireUser() {
+        Map<String, Object> map = new HashMap<>();
+        Subject subject = SecurityUtils.getSubject();
+        long timeout = subject.getSession().getTimeout();
+        Object obj = subject.getPrincipal();
+        map.put("principal", obj);
+        map.put("timeOut", timeout);
+        return Res.success(map,"WebController：You are user");
+    }
+
     @RequestMapping("/require_auth")
     @RequiresAuthentication
     public Res requireAuth() {
-        return Res.success("WebController：You are authenticated");
+        Map<String, Object> map = new HashMap<>();
+        Subject subject = SecurityUtils.getSubject();
+        long timeout = subject.getSession().getTimeout();
+        Object obj = subject.getPrincipal();
+        map.put("principal", obj);
+        map.put("timeOut", timeout);
+        return Res.success(map,"WebController：You are authenticated");
     }
 
     @RequestMapping("/require_role1")
