@@ -42,10 +42,8 @@ public class ExampleController {
 
     //获取当前用户相关信息。
     @PostMapping("infoByHeader")
-    public Res getInfo(@RequestHeader(value = "Authorization", required = false) String token) {
-//        String id = JavaJWT.getId(token);
+    public Res getInfo( ) {
         Map<String, Object> map = new HashMap<>();
-//        map.put("id", id);
         Subject subject = SecurityUtils.getSubject();
         long timeout = subject.getSession().getTimeout();
         Object obj = subject.getPrincipal();
@@ -86,25 +84,13 @@ public class ExampleController {
     @RequestMapping("/require_user")
     @RequiresUser
     public Res requireUser() {
-        Map<String, Object> map = new HashMap<>();
-        Subject subject = SecurityUtils.getSubject();
-        long timeout = subject.getSession().getTimeout();
-        Object obj = subject.getPrincipal();
-        map.put("principal", obj);
-        map.put("timeOut", timeout);
-        return Res.success(map,"WebController：You are user");
+        return Res.success("WebController：You are user");
     }
 
     @RequestMapping("/require_auth")
     @RequiresAuthentication
     public Res requireAuth() {
-        Map<String, Object> map = new HashMap<>();
-        Subject subject = SecurityUtils.getSubject();
-        long timeout = subject.getSession().getTimeout();
-        Object obj = subject.getPrincipal();
-        map.put("principal", obj);
-        map.put("timeOut", timeout);
-        return Res.success(map,"WebController：You are authenticated");
+        return Res.success("WebController：You are authenticated");
     }
 
     @RequestMapping("/require_role1")

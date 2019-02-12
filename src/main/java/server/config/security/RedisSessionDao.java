@@ -64,7 +64,7 @@ public class RedisSessionDao extends AbstractSessionDAO {
         return Objects.requireNonNull(redisTemplate.keys("*")).stream().map(e -> (Session) e).collect(Collectors.toList());
     }
 
-    public class UserKey implements Serializable{
+    public class UserKey implements Serializable {
         Serializable userToken;
 
         UserKey(Serializable sessionId) {

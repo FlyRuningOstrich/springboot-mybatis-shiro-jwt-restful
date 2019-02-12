@@ -7,10 +7,14 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.annotation.OnConnect;
 import com.corundumstudio.socketio.annotation.OnDisconnect;
 import com.corundumstudio.socketio.annotation.OnEvent;
+import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import server.config.security.RedisSessionDao;
+import server.config.security.ShiroSessionTool;
 import server.db.primary.model.basic.User;
 import server.service.interf.login.UserService;
 import server.socketio.model.AckModel;
@@ -22,7 +26,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @Slf4j
 public class MessageEventHandler {
-    //此示例暂未与数据库中数据做任何关联
+    @Autowired
+    ShiroSessionTool shiroSessionTool;
     private static SocketIOServer socketIoServer;
     private static Map<String, List<UUID>> userIdUUIDsMap = new ConcurrentHashMap<>();
     private static Map<UUID, String> UUIDUserIdMap = new ConcurrentHashMap<>();
@@ -39,8 +44,8 @@ public class MessageEventHandler {
     @OnConnect
     public void onConnect(SocketIOClient client) {
         log.debug("客户端:  " + client.getSessionId() + "  已连接");
-        Integer id = (Integer) SecurityUtils.getSubject().getPrincipal();
-//        String userId=client.getHandshakeData().getHttpHeaders().get("Authorization");
+        String authorization = client.getHandshakeData().getSingleUrlParam("Authorization");
+        Integer id = Integer.parseInt(String.valueOf(shiroSessionTool.getPrincipal(authorization)));
         User user = userService.selectOneById(id);
         addUserInfo(user, client.getSessionId());
         updateUserListForWeb();

@@ -20,7 +20,8 @@ public class CorsConfig {
         // 如果要限制 HEADER 或 METHOD 请自行更改
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
-        config.addExposedHeader("Authorization");//！！！ 此处不能为*  ！！！
+        config.addExposedHeader("Authorization");   //！！！ 此处不能为*  ！！！
+        config.addExposedHeader("Remember-Me");     //！！！ 此处不能为*  ！！！
         source.registerCorsConfiguration("/**", config);
         FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
         // 这个顺序很重要，为避免麻烦请设置在最前

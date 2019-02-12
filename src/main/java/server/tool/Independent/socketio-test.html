@@ -4481,7 +4481,7 @@
             socket.close();
             socket.removeAllListeners();
         }
-        socket = io('http://localhost:8097?token=' + tokenEl.value, {forceNew: true});
+        socket = io('http://localhost:8097?Authorization=' + tokenEl.value, {forceNew: true});
         socket.on('connect', function () {
             console.log('socket连接成功');
             changeColor("lightgreen");
