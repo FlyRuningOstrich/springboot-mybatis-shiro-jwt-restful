@@ -1,4 +1,4 @@
-package server.config.security;
+package server.config.security.custom;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.codec.Base64;

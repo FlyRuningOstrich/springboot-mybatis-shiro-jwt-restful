@@ -1,4 +1,4 @@
-package server.config.security;
+package server.config.security.session;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;

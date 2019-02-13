@@ -1,6 +1,5 @@
-package server.config.security;
+package server.config.security.session;
 
-import lombok.Data;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.UnknownSessionException;
 import org.apache.shiro.session.mgt.eis.AbstractSessionDAO;

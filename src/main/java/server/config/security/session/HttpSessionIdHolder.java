@@ -1,4 +1,4 @@
-package server.config.security;
+package server.config.security.session;
 
 import org.springframework.stereotype.Component;
 

@@ -4,6 +4,7 @@ import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.support.DefaultSubjectContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import server.config.security.session.RedisSessionDao;
 
 import java.io.Serializable;
 

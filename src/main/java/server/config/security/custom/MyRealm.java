@@ -1,4 +1,4 @@
-package server.config.security;
+package server.config.security.custom;
 
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -31,6 +31,8 @@ public class MyRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) {
         User user = userService.selectOneById(Integer.parseInt(String.valueOf(auth.getPrincipal())));
+        String s = String.valueOf(auth.getPrincipal());
+        String s1 = String.valueOf(auth.getCredentials());
         return new SimpleAuthenticationInfo(user.getId(), user.getPassword(), ByteSource.Util.bytes(user.getSalt()), getName());
     }
 
