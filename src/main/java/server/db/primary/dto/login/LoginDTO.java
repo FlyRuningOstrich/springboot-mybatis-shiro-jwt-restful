@@ -10,7 +10,6 @@ public class LoginDTO implements Serializable {
     private Integer id;
     private String nickname;
     private String username;
-    private String password;
     private Set<String> roleValueList;
     private Set<String> permissionValueList;
 }

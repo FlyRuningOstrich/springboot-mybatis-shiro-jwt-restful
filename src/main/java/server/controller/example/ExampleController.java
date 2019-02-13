@@ -5,16 +5,20 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.authz.annotation.RequiresUser;
+import org.apache.shiro.crypto.SecureRandomNumberGenerator;
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.ThreadContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import server.db.primary.model.basic.User;
+import server.service.interf.basic.UserService;
 import server.tool.TreeData;
 import server.tool.FileRec;
 import server.tool.Res;
@@ -33,22 +37,45 @@ import java.util.Map;
 public class ExampleController {
     private final FileRec fileRec;
     private final TreeData buildTree;
+    private final UserService userService;
+
 
     @Autowired
-    public ExampleController(FileRec fileRec, TreeData buildTree) {
+    public ExampleController(FileRec fileRec, TreeData buildTree, UserService userService) {
         this.fileRec = fileRec;
         this.buildTree = buildTree;
+        this.userService = userService;
+    }
+
+    @PostMapping("addUser")
+    public Res addUser(@RequestBody JSONObject bJO) {
+        String username = bJO.getString("username");
+        String password = bJO.getString("password");
+        String salt = new SecureRandomNumberGenerator().nextBytes().toHex();
+        User user = new User();
+        user.setUsername(username);
+        String md5Password = new Md5Hash(password, salt, 3).toString();
+        user.setPassword(md5Password);
+        user.setNickname(username);
+        user.setSalt(salt);
+        if (userService.insertOne(user)) {
+            return Res.success("成功");
+        } else {
+            return Res.failure("失败");
+        }
     }
 
     //获取当前用户相关信息。
     @PostMapping("infoByHeader")
-    public Res getInfo( ) {
+    public Res getInfo() {
         Map<String, Object> map = new HashMap<>();
-        Subject subject = SecurityUtils.getSubject();
-        long timeout = subject.getSession().getTimeout();
-        Object obj = subject.getPrincipal();
-        map.put("principal", obj);
-        map.put("timeOut", timeout);
+        Subject subject = ThreadContext.getSubject();
+        if (subject != null) {
+            long timeout = subject.getSession().getTimeout();
+            Object obj = subject.getPrincipal();
+            map.put("principal", obj);
+            map.put("timeOut", timeout);
+        }
         return Res.success(map);
     }
 

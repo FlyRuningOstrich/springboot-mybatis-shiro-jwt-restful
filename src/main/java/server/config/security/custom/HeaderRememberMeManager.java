@@ -7,12 +7,14 @@ import org.apache.shiro.subject.Subject;
 import org.apache.shiro.subject.SubjectContext;
 import org.apache.shiro.web.subject.WebSubjectContext;
 import org.apache.shiro.web.util.WebUtils;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
+@Component
 public class HeaderRememberMeManager extends AbstractRememberMeManager {
     private static final String DEFAULT_REMEMBER_ME_HEADER_NAME = "Remember-Me";
 
@@ -28,7 +30,6 @@ public class HeaderRememberMeManager extends AbstractRememberMeManager {
     protected byte[] getRememberedSerializedIdentity(SubjectContext subjectContext) {
         WebSubjectContext wsc = (WebSubjectContext) subjectContext;
         HttpServletRequest request = WebUtils.getHttpRequest(wsc);
-        HttpServletResponse response = WebUtils.getHttpResponse(wsc);
         String base64 = request.getHeader(DEFAULT_REMEMBER_ME_HEADER_NAME);
         if (base64 != null) {
             base64 = this.ensurePadding(base64);

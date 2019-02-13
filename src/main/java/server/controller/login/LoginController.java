@@ -3,30 +3,24 @@ package server.controller.login;
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authz.UnauthenticatedException;
-import org.apache.shiro.authz.annotation.RequiresGuest;
-import org.apache.shiro.subject.Subject;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import server.config.security.ShiroLogin;
+import server.config.security.ShiroLoginLogout;
 import server.db.primary.dto.login.LoginDTO;
 import server.service.interf.login.LoginService;
 import server.tool.Res;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 @Api(tags = "登录")
 @RestController("FunLoginController")
 public class LoginController {
-    private final ShiroLogin shiroLogin;
+    private final ShiroLoginLogout shiroLogin;
     private final LoginService loginService;
 
     @Autowired
-    public LoginController(LoginService loginService, ShiroLogin shiroLogin) {
+    public LoginController(LoginService loginService, ShiroLoginLogout shiroLogin) {
         this.loginService = loginService;
         this.shiroLogin = shiroLogin;
     }
@@ -37,7 +31,7 @@ public class LoginController {
             @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "string", example = "123")
     })
     @PostMapping("/login")
-    public Res login(@RequestBody LoginModel loginModel) {
+    public Res login( @RequestBody LoginModel loginModel) {
         String username = loginModel.getUsername();
         String password = loginModel.getPassword();
         Boolean rememberMe = loginModel.getRememberMe();
@@ -49,13 +43,14 @@ public class LoginController {
         }
         LoginDTO loginDTO = loginService.selectUserByUsername(username);
         if (loginDTO == null) {
-            throw new UnauthenticatedException("无此账号");
+            return Res.failure("无此账号");
         }
-        if (!password.equals(loginDTO.getPassword())) {
-            throw new UnauthenticatedException("密码错误");
+        try{
+            shiroLogin.login(loginDTO.getId(), password, rememberMe);
+        } catch(AuthenticationException e){
+            e.printStackTrace();
+            return Res.failure("密码错误");
         }
-        shiroLogin.login(loginDTO.getId(), password, rememberMe);
-        //添加token
         return Res.success(new loginRes(loginDTO), "登录成功");
     }
 

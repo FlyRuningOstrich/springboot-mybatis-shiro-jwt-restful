@@ -1,4 +1,4 @@
-package server.config.security;
+package server.config.security.session;
 
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.support.DefaultSubjectContext;
@@ -27,4 +27,5 @@ public class ShiroSessionTool {
         }
         return session.getAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY) != null;
     }
+
 }

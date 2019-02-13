@@ -7,13 +7,14 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import server.tool.ApplicationContextHelper;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Slf4j
 public class DBRedisCache implements Cache {
-    private static final long EXPIRE_TIME_IN_MINUTES = 180000; // redis过期时间
+    private static final long EXPIRE_TIME_IN_MINUTES = 30; // redis过期时间
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private final String id;
 
@@ -31,21 +32,17 @@ public class DBRedisCache implements Cache {
 
     @Override
     public void putObject(Object key, Object value) {
-        ValueOperations<Object, Object> opsForValue = getRedisTemplate().opsForValue();
-        opsForValue.set(key, value, EXPIRE_TIME_IN_MINUTES, TimeUnit.MINUTES);
+        getRedisTemplate().opsForValue().set(key, value, EXPIRE_TIME_IN_MINUTES, TimeUnit.MINUTES);
     }
 
     @Override
     public Object getObject(Object key) {
-        ValueOperations<Object, Object> opsForValue = getRedisTemplate().opsForValue();
-        return opsForValue.get(key);
+        return getRedisTemplate().opsForValue().get(key);
     }
 
     @Override
     public Object removeObject(Object key) {
-        Boolean delete = getRedisTemplate().delete(key);
-        log.debug("Remove cached query result from redis");
-        return delete;
+        return getRedisTemplate().delete(key);
     }
 
     @Override
@@ -58,7 +55,7 @@ public class DBRedisCache implements Cache {
 
     @Override
     public int getSize() {
-        return 0;
+        return Objects.requireNonNull(getRedisTemplate().keys("*")).size();
     }
 
     @Override
@@ -67,6 +64,6 @@ public class DBRedisCache implements Cache {
     }
 
     private RedisTemplate<Object, Object> getRedisTemplate() {
-        return ApplicationContextHelper.getBean("redisTemplate");
+        return ApplicationContextHelper.getBean("DBRedisTemplate");
     }
 }
