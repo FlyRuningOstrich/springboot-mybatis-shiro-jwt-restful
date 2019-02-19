@@ -6,47 +6,26 @@
     <properties resource="application.properties"/>
     <!--若驱动在maven库中无法拉取（如oracle驱动），使用的本地文件，可使用一下配置将本地jar引入。或在pom中直接配置依赖即可-->
     <!--<classPathEntry location="lib/ojdbc6.jar"/>-->
-    <!--<classPathEntry location="lib/mysql-connector-java-5.1.44-bin.jar"/>-->
     <context id="generator1" targetRuntime="MyBatis3">
         <!-- 序列化接口 -->
         <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
+
+        <!-- 若不使用通用mapper，则将以下三个plugin注释掉,并打开<commentGenerator>，可生成默认格式文件  -->
+        <!--MapperPlugin： 生成继承CommenMapper的Mapper类-->
+        <!--LombokPlugin： 使用lombok的@Data注解，取消生成setter/getter-->
+        <!--LombokSwaggerPlugin： 使用lombok的@Data注解,注释使用，取消生成setter/getter-->
         <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
             <property name="mappers" value="server.config.tkmapper.common.CommonMapper"/>
-            <!--字段注释-->
-            <!--<property name="useMapperCommentGenerator" value="true"/>-->
-            <!--字段大小写区分-->
-            <!--<property name="caseSensitive" value="false"/>-->
-            <!--全部生成@Table\@Column注解-->
-            <!--<property name="forceAnnotation" value="false"/>-->
-            <!--字段名额外添加前缀-->
-            <!--<property name="beginningDelimiter" value="`"/>-->
-            <!--字段名额外添加后缀-->
-            <!--<property name="endingDelimiter" value="`"/>-->
-            <!--生成字段名静态变量到实体类中-->
-            <property name="generateColumnConsts" value="true"/>
-            <!--lombok支持-->
-            <property name="lombok" value="Data,Accessors"/>
         </plugin>
+        <!--<plugin type="com.custom.mybatis.generator.plugins.LombokPlugin" /> -->
+        <plugin type="com.custom.mybatis.generator.plugins.LombokSwaggerPlugin"/>
 
-        <!-- 去除生成时的注释（若使用了tk.mybatis.mapper.generator.MapperPlugin插件，可不在此配置） -->
+        <!--去除生成时的注释 -->
         <!--<commentGenerator>-->
-        <!--&lt;!&ndash; 是否生成注释代时间戳 &ndash;&gt;-->
-        <!--<property name="suppressDate" value="true"/>-->
         <!--&lt;!&ndash; 是否去除自动生成的注释 true：是 ： false:否 &ndash;&gt;-->
         <!--<property name="suppressAllComments" value="true"/>-->
-        <!--&lt;!&ndash;[非必须] 自动识别数据库关键字，默认false，如果设置为true，根据SqlReservedWords中定义的关键字列表；-->
-        <!--一般保留默认值，遇到数据库关键字（Java关键字），使用columnOverride覆盖 &ndash;&gt;-->
-        <!--<property name="autoDelimitKeywords" value="false"/>-->
-        <!--&lt;!&ndash;[非必须] 生成的Java文件的编码 &ndash;&gt;-->
-        <!--<property name="javaFileEncoding" value="UTF-8"/>-->
-        <!--&lt;!&ndash;[非必须] 格式化java代码 &ndash;&gt;-->
-        <!--<property name="javaFormatter" value="org.mybatis.generator.api.dom.DefaultJavaFormatter"/>-->
-        <!--&lt;!&ndash;[非必须] 格式化XML代码 &ndash;&gt;-->
-        <!--<property name="xmlFormatter" value="org.mybatis.generator.api.dom.DefaultXmlFormatter"/>-->
-        <!--&lt;!&ndash;[非必须] beginningDelimiter和endingDelimiter：指明数据库的用于标记数据库对象名的符号，比如ORACLE就是双引号，MYSQL默认是`反引号； &ndash;&gt;-->
-        <!--<property name="beginningDelimiter" value="`"/>-->
-        <!--<property name="endingDelimiter" value="`"/>-->
         <!--</commentGenerator>-->
+
         <jdbcConnection
                 driverClass="${spring.datasource.primary.driver-class-name}"
                 connectionURL="${spring.datasource.primary.jdbc-url}"
@@ -56,26 +35,15 @@
         </jdbcConnection>
 
         <!-- 生成实体类地址 -->
-        <javaModelGenerator targetPackage="server.db.primary.model" targetProject="src/main/java">
-            <!-- enableSubPackages:是否让schema作为包的后缀 -->
-            <property name="enableSubPackages" value="false"/>
-        </javaModelGenerator>
+        <javaModelGenerator targetPackage="server.db.primary.model" targetProject="src/main/java"/>
 
         <!-- 生成mapper xml文件 -->
-        <sqlMapGenerator targetPackage="mybatis.mapper.primary.generate" targetProject="src/main/resources">
-            <!-- enableSubPackages:是否让schema作为包的后缀 -->
-            <property name="enableSubPackages" value="false"/>
-            <property name="mergeable" value="false"/>
-        </sqlMapGenerator>
+        <sqlMapGenerator targetPackage="mybatis.mapper.primary.generate" targetProject="src/main/resources"/>
 
-        <!-- 生成mapper类 -->
-        <javaClientGenerator targetPackage="server.db.primary.mapper" targetProject="src/main/java" type="XMLMAPPER">
-            <!--XMLMAPPER表示生成xml映射文件；ANNOTATEDMAPPER，表示生成的dao采用注解来写sql-->
-            <!-- enableSubPackages:是否让schema作为包的后缀 -->
-            <property name="enableSubPackages" value="false"/>
-        </javaClientGenerator>
+        <!-- 生成mapper java文件 -->
+        <javaClientGenerator targetPackage="server.db.primary.mapper" targetProject="src/main/java" type="XMLMAPPER"/>
 
-        <!--要生成的表： schema：数据库名。tableName：表名-->
+        <!--设置生成的表-->
         <table schema="mybatis_test_db" tableName="user"
                enableCountByExample="false"
                enableDeleteByExample="false"
