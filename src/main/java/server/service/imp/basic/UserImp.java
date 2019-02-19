@@ -33,4 +33,16 @@ public class UserImp implements UserService {
         return userMapper.insertSelective(user);
     }
 
+    @Override
+    public User selectUserByNickname(String nickname) {
+        Example example = new Example(User.class);
+        example.createCriteria().andEqualTo(User.NICKNAME, nickname);
+        return userMapper.selectOneByExample(example);
+    }
+
+    @Override
+    public User selectUserByNickname1(String nickname) {
+        return userMapper.selectUserByNickname1(nickname);
+    }
+
 }

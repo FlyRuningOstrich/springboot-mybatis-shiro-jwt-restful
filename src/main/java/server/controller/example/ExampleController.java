@@ -30,7 +30,7 @@ import java.util.Map;
 @ApiIgnore
 //权限访问测试
 @RestController
-@RequestMapping("/test")
+@RequestMapping("test")
 public class ExampleController {
     private final FileRec fileRec;
     private final TreeData buildTree;
@@ -45,8 +45,23 @@ public class ExampleController {
         this.javaJWT = javaJWT;
     }
 
-    //获取当前用户相关信息。
-    @PostMapping("infoByHeader")
+    //使用通用mapper查询
+    @PostMapping("infoByNickname")
+    public Res infoByNickname(@RequestBody JSONObject bJO) {
+        String nickname = bJO.getString("nickname");
+        User user = userService.selectUserByNickname(nickname);
+        return Res.success(user);
+    }
+    //使用普通mybatis mapper查询
+    @PostMapping("infoByNickname1")
+    public Res infoByNickname1(@RequestBody JSONObject bJO) {
+        String nickname = bJO.getString("nickname");
+        User user = userService.selectUserByNickname1(nickname);
+        return Res.success(user);
+    }
+
+    //获取当前用户id。
+    @PostMapping("info")
     public Res getInfo(@RequestHeader(value = "Authorization", required = false) String token) {
         String userIdByToken = javaJWT.getId(token);//通过token解析获得
         Object userIdBySubject = SecurityUtils.getSubject().getPrincipal();//通过shiro的subject获得
@@ -57,6 +72,7 @@ public class ExampleController {
         return Res.success(map);
     }
 
+    //增加一个用户（暂未做重名检测）
     @PostMapping("addUser")
     public Res addUser(@RequestBody JSONObject bJO) {
         String username = bJO.getString("username");
@@ -80,6 +96,7 @@ public class ExampleController {
         }
     }
 
+    //树状结构数据构建工具类测试
     @RequestMapping("tree")
     public Res getTree(@RequestParam("c") Boolean compareSelfId, @RequestParam("r") Integer rootId) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         List<TreeItem> li = new ArrayList<TreeItem>() {{
@@ -128,7 +145,7 @@ public class ExampleController {
     }
 
     @RequestMapping("/require_role12")
-    @RequiresRoles({"role1","role2"})
+    @RequiresRoles({"role1", "role2"})
     public Res requireRole1() {
         return Res.success("WebController：You are visiting require_role12 [role1&role2]");
     }
